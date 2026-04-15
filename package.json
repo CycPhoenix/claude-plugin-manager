@@ -1,0 +1,32 @@
+{
+  "name": "claude-plugin-manager",
+  "version": "0.1.0",
+  "description": "Install and manage community Claude plugins",
+  "main": "src/cli.js",
+  "bin": {
+    "cpm": "./src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": ["claude", "plugin", "manager", "ai"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@octokit/rest": "^20.0.2",
+    "chalk": "^4.1.2",
+    "inquirer": "^8.2.6",
+    "keytar": "^7.9.0",
+    "ora": "^5.4.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nock": "^13.5.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
