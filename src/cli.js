@@ -1,4 +1,5 @@
 #!/usr/bin/env node
 'use strict';
 
-console.log('cpm v0.1.0');
+const { version } = require('../package.json');
+process.stdout.write(`cpm v${version}\n`);
