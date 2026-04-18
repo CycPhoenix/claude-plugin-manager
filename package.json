@@ -1,6 +1,6 @@
 {
   "name": "claude-plugin-manager",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Install and manage community Claude plugins",
   "bin": {
     "cpm": "./src/cli.js"
@@ -11,7 +11,12 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },
-  "keywords": ["claude", "plugin", "manager", "ai"],
+  "keywords": [
+    "claude",
+    "plugin",
+    "manager",
+    "ai"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
