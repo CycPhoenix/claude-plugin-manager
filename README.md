@@ -1,6 +1,14 @@
-# Claude Plugin Manager
+# Claude Plugin Manager (cpm)
 
-Install and manage community Claude plugins — not listed on the official marketplace — from GitHub or a community registry.
+**cpm** is a CLI tool that installs community Claude plugins from GitHub or a registry into Claude Code and Cowork — no official marketplace required.
+
+## Key Features
+
+- **Install from any GitHub repo** — paste a URL, cpm handles the rest
+- **Auto-detects install targets** — skills, MCP servers, hooks, Cowork plugins
+- **Community registry** — search and browse available plugins
+- **Private repo support** — store a GitHub PAT securely via OS keychain
+- **Interactive TUI** — run `cpm` with no args for guided menu
 
 ## Install
 
@@ -8,7 +16,7 @@ Install and manage community Claude plugins — not listed on the official marke
 npm install -g claude-plugin-manager
 ```
 
-Or run without installing:
+Or without installing:
 
 ```bash
 npx claude-plugin-manager
@@ -25,37 +33,29 @@ cpm
 ### Subcommands
 
 ```bash
-cpm install <url>           # install from GitHub URL or direct .json URL
-cpm search [query]          # browse or search the community registry
-cpm list                    # list installed plugins
+cpm install <url>           # install from GitHub URL
+cpm search [query]          # browse community registry
+cpm list                    # show installed plugins
 cpm remove <name>           # uninstall a plugin
-cpm auth set-token <token>  # store GitHub PAT (for private repos)
+cpm auth set-token <token>  # store GitHub PAT (private repos)
 cpm auth status             # check stored token
 cpm auth remove             # remove stored token
 ```
 
 ## Install Targets
 
-When installing, cpm detects which targets the plugin supports and lets you choose:
+cpm detects which targets a plugin supports and lets you choose:
 
 | Target | What it installs |
 |---|---|
-| **Cowork Plugin** | Files to `~/.claude/plugins/cache/` |
-| **Claude Code Skill** | `.md` skill file to `~/.claude/plugins/cache/` |
-| **Claude Code MCP** | Server entry in `~/.claude/settings.json` |
-| **Claude Code Hook** | Hook entry in `~/.claude/settings.json` |
-
-## Private Repos
-
-Store a GitHub personal access token with repo read scope:
-
-```bash
-cpm auth set-token ghp_yourtoken
-```
+| `cc-skill` | Skill `.md` file → `~/.claude/plugins/cache/` |
+| `cc-mcp` | MCP server entry → `~/.claude/settings.json` |
+| `cc-hook` | Hook entry → `~/.claude/settings.json` |
+| `cowork` | Plugin files → `~/.claude/plugins/cache/` |
 
 ## Building a Plugin
 
-Add a `manifest.json` to your GitHub repo:
+Add a `manifest.json` to your GitHub repo root:
 
 ```json
 {
@@ -69,7 +69,28 @@ Add a `manifest.json` to your GitHub repo:
 }
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) to add it to the registry.
+Multiple targets supported:
+
+```json
+{
+  "targets": {
+    "cc-skill": { "file": "skill.md" },
+    "cc-mcp": { "server": { "command": "node", "args": ["server.js"] } },
+    "cc-hook": { "event": "PostToolUse", "command": "node hook.js" },
+    "cowork": { "files": ["plugin.md", "manifest.json"] }
+  }
+}
+```
+
+Submit to the registry: see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Private Repos
+
+```bash
+cpm auth set-token ghp_yourtoken
+```
+
+Token stored securely via OS keychain (keytar) with JSON file fallback.
 
 ## License
 
