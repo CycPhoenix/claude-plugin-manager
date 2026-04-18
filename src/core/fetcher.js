@@ -6,7 +6,7 @@ const { Octokit } = require('@octokit/rest');
 function parseGitHubUrl(url) {
   const match = url.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+?)(?:\/tree\/([^/]+))?(?:\.git)?(?:\/)?$/);
   if (!match) return null;
-  return { owner: match[1], repo: match[2], ref: match[3] || 'main' };
+  return { owner: match[1], repo: match[2], ref: match[3] || null };
 }
 
 function httpsGet(url) {
@@ -28,7 +28,10 @@ function httpsGet(url) {
 
 async function fetchFromUrl(url, token = null) {
   const parsed = parseGitHubUrl(url);
-  if (parsed) return fetchFromGitHub(parsed.owner, parsed.repo, parsed.ref, token);
+  if (parsed) {
+    const ref = parsed.ref || await getDefaultBranch(parsed.owner, parsed.repo, token);
+    return fetchFromGitHub(parsed.owner, parsed.repo, ref, token);
+  }
 
   const buf = await httpsGet(url);
   let manifest;
@@ -38,6 +41,12 @@ async function fetchFromUrl(url, token = null) {
     throw new Error(`Failed to fetch ${url}: response is not valid JSON`);
   }
   return { manifest, files: { 'manifest.json': buf } };
+}
+
+async function getDefaultBranch(owner, repo, token = null) {
+  const octokit = new Octokit({ auth: token || undefined });
+  const { data } = await octokit.repos.get({ owner, repo });
+  return data.default_branch;
 }
 
 async function fetchFromGitHub(owner, repo, ref = 'main', token = null) {

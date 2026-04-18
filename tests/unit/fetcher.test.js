@@ -8,7 +8,7 @@ afterEach(() => nock.cleanAll());
 describe('parseGitHubUrl', () => {
   test('parses standard GitHub repo URL', () => {
     expect(parseGitHubUrl('https://github.com/alice/my-plugin'))
-      .toEqual({ owner: 'alice', repo: 'my-plugin', ref: 'main' });
+      .toEqual({ owner: 'alice', repo: 'my-plugin', ref: null });
   });
 
   test('parses GitHub URL with tree/branch', () => {
