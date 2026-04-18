@@ -1,0 +1,11 @@
+{
+  "name": "claude-plugin-manager",
+  "version": "0.1.0",
+  "description": "Install and manage community Claude plugins from GitHub or the registry",
+  "author": "CycPhoenix",
+  "targets": {
+    "cowork": {
+      "files": ["plugin.md", "manifest.json"]
+    }
+  }
+}
