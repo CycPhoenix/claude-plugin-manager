@@ -1,6 +1,6 @@
 {
   "name": "claude-plugin-manager",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Install and manage community Claude plugins",
   "bin": {
     "cpm": "./src/cli.js"
