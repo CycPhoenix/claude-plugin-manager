@@ -1,46 +1,43 @@
 'use strict';
 
-// Mock keytar before requiring tokens
-jest.mock('keytar', () => ({
+const mockEntry = {
   setPassword: jest.fn(),
   getPassword: jest.fn(),
   deletePassword: jest.fn()
+};
+
+jest.mock('@napi-rs/keyring', () => ({
+  Entry: jest.fn(() => mockEntry)
 }), { virtual: true });
 
-const keytar = require('keytar');
 const { setToken, getToken, deleteToken } = require('../../src/auth/tokens');
-
-const SERVICE = 'claude-plugin-manager';
-const ACCOUNT = 'github';
 
 beforeEach(() => jest.clearAllMocks());
 
 describe('setToken', () => {
-  test('stores token via keytar', async () => {
-    keytar.setPassword.mockResolvedValue(undefined);
+  test('stores token via keyring Entry', async () => {
     await setToken('ghp_test123');
-    expect(keytar.setPassword).toHaveBeenCalledWith(SERVICE, ACCOUNT, 'ghp_test123');
+    expect(mockEntry.setPassword).toHaveBeenCalledWith('ghp_test123');
   });
 });
 
 describe('getToken', () => {
-  test('retrieves token via keytar', async () => {
-    keytar.getPassword.mockResolvedValue('ghp_test123');
+  test('retrieves token via keyring Entry', async () => {
+    mockEntry.getPassword.mockReturnValue('ghp_test123');
     const token = await getToken();
     expect(token).toBe('ghp_test123');
   });
 
-  test('returns null when no token stored', async () => {
-    keytar.getPassword.mockResolvedValue(null);
+  test('returns null when keyring throws', async () => {
+    mockEntry.getPassword.mockImplementation(() => { throw new Error('not found'); });
     const token = await getToken();
     expect(token).toBeNull();
   });
 });
 
 describe('deleteToken', () => {
-  test('deletes token via keytar', async () => {
-    keytar.deletePassword.mockResolvedValue(true);
+  test('deletes token via keyring Entry', async () => {
     await deleteToken();
-    expect(keytar.deletePassword).toHaveBeenCalledWith(SERVICE, ACCOUNT);
+    expect(mockEntry.deletePassword).toHaveBeenCalled();
   });
 });

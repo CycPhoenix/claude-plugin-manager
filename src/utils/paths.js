@@ -23,10 +23,15 @@ function getCoworkPluginsDir() {
   return path.join(getCCPluginsDir(), 'cache');
 }
 
+function getAgentsDir() {
+  return path.join(getClaudeDir(), 'agents');
+}
+
 module.exports = {
   getClaudeDir,
   getCpmConfigDir,
   getCCPluginsDir,
   getCCSettingsPath,
-  getCoworkPluginsDir
+  getCoworkPluginsDir,
+  getAgentsDir
 };

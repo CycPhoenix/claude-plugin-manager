@@ -7,9 +7,10 @@ const { getCpmConfigDir } = require('../utils/paths');
 const SERVICE = 'claude-plugin-manager';
 const ACCOUNT = 'github';
 
-function loadKeytar() {
+function getEntry() {
   try {
-    return require('keytar');
+    const { Entry } = require('@napi-rs/keyring');
+    return new Entry(SERVICE, ACCOUNT);
   } catch {
     return null;
   }
@@ -20,18 +21,22 @@ function getConfigFilePath() {
 }
 
 async function setToken(token) {
-  const keytar = loadKeytar();
-  if (keytar) {
-    await keytar.setPassword(SERVICE, ACCOUNT, token);
+  const entry = getEntry();
+  if (entry) {
+    entry.setPassword(token);
     return;
   }
   await safeWriteJson(getConfigFilePath(), { githubToken: token });
 }
 
 async function getToken() {
-  const keytar = loadKeytar();
-  if (keytar) {
-    return keytar.getPassword(SERVICE, ACCOUNT);
+  const entry = getEntry();
+  if (entry) {
+    try {
+      return entry.getPassword();
+    } catch {
+      return null;
+    }
   }
   try {
     const config = await readJsonFile(getConfigFilePath());
@@ -42,9 +47,13 @@ async function getToken() {
 }
 
 async function deleteToken() {
-  const keytar = loadKeytar();
-  if (keytar) {
-    await keytar.deletePassword(SERVICE, ACCOUNT);
+  const entry = getEntry();
+  if (entry) {
+    try {
+      entry.deletePassword();
+    } catch {
+      // ignore if not found
+    }
     return;
   }
   await safeWriteJson(getConfigFilePath(), {});
